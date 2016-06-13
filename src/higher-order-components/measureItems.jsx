@@ -1,7 +1,9 @@
 import React from 'react';
+import imagesLoaded from 'imagesloaded';
 import partition from 'lodash.partition';
+import debounce from 'lodash.debounce';
 
-export default Grid => React.createClass({
+export default (Grid, { measureImages, background } = {}) => React.createClass({
 
   getDefaultProps() {
     return {
@@ -15,34 +17,75 @@ export default Grid => React.createClass({
     };
   },
 
+  componentWillMount() {
+    this._updateRectsDebounced = debounce(this.updateRects, 20);
+    this._rects = {};
+    this._loading = {};
+  },
+
+  componentDidMount() {
+    this.measureElements();
+  },
+
+  componentDidUpdate() {
+    this.measureElements();
+  },
+
+  measureElements() {
+    if (this._elementsToMeasureContainer) {
+      const elements = this._elementsToMeasureContainer.children;
+
+      if (elements.length) {
+        if (measureImages) {
+          Array.from(elements)
+            .filter(el => !this._loading[el.dataset.stonecutterkey])
+            .forEach(el => {
+              this._loading[el.dataset.stonecutterkey] = true;
+
+              imagesLoaded(el, { background }, () => {
+                this._rects[el.dataset.stonecutterkey] = el.getBoundingClientRect();
+                delete this._loading[el.dataset.stonecutterkey];
+
+                this._updateRectsDebounced();
+              });
+            });
+        } else {
+          this._rects = Array.from(elements).reduce((acc, el) => {
+            acc[el.dataset.stonecutterkey] = el.getBoundingClientRect();
+            return acc;
+          }, {});
+
+          this.updateRects();
+        }
+      }
+    }
+  },
+
+  updateRects() {
+    this.setState({
+      rects: {
+        ...this.state.rects,
+        ...this._rects
+      }
+    });
+
+    this._rects = {};
+  },
+
   render() {
     const { component } = this.props;
-    const newRects = {};
 
     const [newElements, existingElements] = partition(
       React.Children.toArray(this.props.children),
       element => !this.state.rects[element.key]);
 
-    const elementsToMeasure = newElements.map((element, index, arr) =>
+    const elementsToMeasure = newElements.map(element =>
       React.cloneElement(element, {
-        style: {
+        'style': {
           ...element.props.style,
           width: this.props.columnWidth
         },
-        ref: el => {
-          if (el) {
-            newRects[element.key] = el.getBoundingClientRect();
-
-            if (index === arr.length - 1) {
-              this.setState({
-                rects: {
-                  ...this.state.rects,  // Memory leak here?
-                  ...newRects
-                }
-              });
-            }
-          }
-        }
+        'data-stonecutterkey': element.key
       })
     );
 
@@ -54,7 +97,7 @@ export default Grid => React.createClass({
 
     return (
       <span>
-        {measuredElements.length &&
+        {measuredElements.length > 0 &&
           <Grid
             {...this.props}
           >
@@ -69,7 +112,8 @@ export default Grid => React.createClass({
               margin: 0,
               overflow: 'hidden',
               visibility: 'hidden'
-            }
+            },
+            ref: el => { this._elementsToMeasureContainer = el; }
           }, elementsToMeasure)}
       </span>
     );
