@@ -1,7 +1,7 @@
 
 export default function(items, props) {
   const { columns, columnWidth, gutterWidth, gutterHeight } = props;
-debugger;
+
   const columnHeights = [];
   for (let i = 0; i < columns; i++) { columnHeights.push(0); }
 
