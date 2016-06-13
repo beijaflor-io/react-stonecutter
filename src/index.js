@@ -6,6 +6,7 @@ import { default as measureItems } from './higher-order-components/measureItems'
 
 import { default as pinterest } from './layouts/pinterest';
 import { default as simpleLayout } from './layouts/simple';
+import { default as horizontalLayout } from './layouts/horizontal';
 
 import * as foldUp from './enter-exit-styles/foldUp';
 import * as fromCenter from './enter-exit-styles/fromCenter';
@@ -19,6 +20,7 @@ import * as skew from './enter-exit-styles/skew';
 import * as easings from './utils/easings';
 
 export const layout = {
+  horizontal: horizontalLayout,
   pinterest,
   simple: simpleLayout
 };
