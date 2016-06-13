@@ -7,6 +7,7 @@ import Grid from './Grid';
 import { easings } from '../../../src/index';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const widths = [1, 2, 3];
 
 const ipsum = `Who controls the British crown?
 Who keeps the metric system down?
@@ -17,7 +18,7 @@ Who makes Steve Guttenberg a star?
 Who robs cavefish of their sight?
 Who rigs every Oscar night?`.split('\n');
 
-const layouts = ['Pinterest', 'Simple'];
+const layouts = ['Horizontal', 'Pinterest', 'Simple'];
 const enterExitStyles = ['Simple', 'Skew', 'Newspaper',
   'Fold Up', 'From Center', 'From Left to Right', 'From Top', 'From Bottom'];
 
@@ -58,23 +59,28 @@ export default React.createClass({
       .sort();
   },
 
+  generateWidth() {
+    return shuffle(widths)[0];
+  },
+
   render() {
     const { data, ...gridProps } = this.state;
     const { useCSS, layout, enterExitStyle, responsive, columns, gutters,
       stiffness, damping, duration, easing } = this.state;
 
-    const itemHeight = layout === 'simple' ? 190 : null;
+    const itemHeight = layout === 'simple' || layout === 'horizontal' ? 190 : null;
 
     const items = data.map(letter => {
       const contentIndex = letter.charCodeAt(0) % 6;
       const content = ipsum.slice(contentIndex, (contentIndex * 1.5 | 0) + 1);
-
+      const widthRatio = this.generateWidth();
       return (
         <li
           className="grid-item"
           key={letter}
+          dataRatio={widthRatio}
           style={{
-            width: 150,
+            width: layout === 'horizontal' ? widthRatio * 150 : 150,
             height: itemHeight
           }}
         >

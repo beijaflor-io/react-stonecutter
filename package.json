@@ -16,7 +16,6 @@
   "license": "MIT",
   "config": {
     "ghooks": {
-      "pre-commit": "gulp lint",
       "pre-push": "npm test"
     }
   },
