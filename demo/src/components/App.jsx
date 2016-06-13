@@ -7,7 +7,7 @@ import Grid from './Grid';
 import { easings } from '../../../src/index';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-const widths = [1, 2, 3];
+const widths = [1, 2, 3]; // this is width ratio
 
 const ipsum = `Who controls the British crown?
 Who keeps the metric system down?
@@ -80,7 +80,9 @@ export default React.createClass({
           key={letter}
           dataRatio={widthRatio}
           style={{
-            width: layout === 'horizontal' ? widthRatio * 150 : 150,
+            width: layout === 'horizontal' ?
+              widthRatio * 150 + (widthRatio > 1 && gutters * (widthRatio - 1)) :
+              150,
             height: itemHeight
           }}
         >
