@@ -71,8 +71,7 @@ export default function(items, props) {
   });
 
   const gridWidth = columns * columnWidth + ((columns - 1) * gutterWidth);
-  const gridHeight = Math.ceil(items.length / columns) *
-    (itemHeight + gutterHeight) - gutterHeight;
+  const gridHeight = rows.length * (itemHeight + gutterHeight) - gutterHeight;
 
   return { positions, gridWidth, gridHeight };
 }
