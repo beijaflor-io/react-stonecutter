@@ -18,7 +18,6 @@ export default (Grid, { maxWidth, minPadding = 0, defaultColumns = 4 } = {}) =>
 
     componentWillMount() {
       const { columnWidth, gutterWidth } = this.props;
-
       const breakpoints = [];
       const getWidth = i => i * (columnWidth + gutterWidth) - gutterWidth + minPadding;
 
